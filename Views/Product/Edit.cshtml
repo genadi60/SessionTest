@@ -1,0 +1,64 @@
+﻿@model EditProductInputModel
+
+@{
+    ViewData["Title"] = "Edit";
+    var categories = this.ViewData["Categories"] as IEnumerable<SelectListItem>;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit Product</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="@Model.Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" placeholder="@Model.Description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" placeholder="@Model.Price" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category.Name" class="control-label"></label>
+                <select asp-items="categories" asp-for="Category.Name" class="form-control">@Model.Category.Name</select>
+                <span asp-validation-for="Category.Name" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="img-thumbnail">
+                    <div id="product_details_slider" class="carousel" data-ride="carousel">
+                        <a style="background-image: url(../../wwwroot/images/@Model.Image">
+                        </a>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <a class="img-thumbnail">
+                                    <img class="img-thumbnail" src="~/images/@Model.Image" alt="First slide">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary btn-dark" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn-dark btn-primary btn" asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

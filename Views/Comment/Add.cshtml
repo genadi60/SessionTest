@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model CreateCommentInputModel
+@inject SignInManager<IdentityUser> SignInManager
+@{
+    ViewData["Title"] = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Add</h1>
+
+<h4>CreateCommentViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="Comment" asp-action="Add" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control" rows="4" cols="50"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <input asp-for="UserId" class="form-control" value="@Model.UserId"/>
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="ProductId" class="control-label"></label>
+                <input asp-for="ProductId" class="form-control" value="@Model.ProductId"/>
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-dark btn-lg" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back to List</a>
+</div>
+
