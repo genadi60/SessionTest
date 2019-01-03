@@ -1,0 +1,73 @@
+﻿@model SessionTest.ViewModels.CartViewModel
+
+@{
+    ViewData["Title"] = "Your Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var products = Model.Products;
+    ViewBag.Cart = Model;
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<hr />
+@if (products.Any())
+{
+    <hr />
+    <h5 class="text-center mb-3">Products count: @products.Sum(p => p.Quantity)</h5>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th scope="col" class="align-middle text-center"><h3>Id</h3></th>
+                <th scope="col" class="align-middle text-center"><h3>Product name</h3></th>
+                <th scope="col" class="align-middle text-center"><h3>Quantity</h3></th>
+                <th scope="col" class="align-middle text-center"><h3>Price</h3></th>
+                <th scope="col" class="align-middle text-center"><h3>Actions</h3></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <th scope="row" class="align-middle text-center"><h5>@product.Id</h5></th>
+                    <td class="align-middle text-center"><h5>@product.Name</h5></td>
+                    <td class="align-middle text-center"><h5>@product.Quantity</h5></td>
+                    <td class="align-middle text-center"><h5>$ @product.Price</h5></td>
+                    <td class="align-middle text-center">
+                        <form method="get" action="/product/details">
+                            <button type="submit" name="id" value="@product.Id" class="btn btn-dark btn-sm">Details</button>
+                        </form>
+                        <form method="get" action="/cart/remove">
+                            @if (product.Quantity > 1)
+                            {
+                                <input class="form-control btn-sm mt-1" type="number" min="1" max="@product.Quantity" id="quantity" name="quantity" placeholder="Quantity"/>
+                            }
+                            <button type="submit" name="productId" value="@product.Id" class="btn btn-dark btn-sm mt-1">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between">
+        <form method="post" asp-controller="Cart" asp-action="Delete">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <form method="post" asp-controller="Cart" asp-action="Create">
+            <button type="submit" class="btn btn-dark">Confirm Order</button>
+        </form>
+    </div>
+    <hr />
+    <div class="d-flex justify-content-between">
+        <h2>Total:</h2>
+        <h2>$ @Model.Total</h2>
+    </div>
+}
+else
+{
+    <h4 class="text-center">Your Shopping Cart is empty.<a asp-controller="Home" asp-action="Index"> Start shopping now!</a></h4>
+    
+}
+<hr />

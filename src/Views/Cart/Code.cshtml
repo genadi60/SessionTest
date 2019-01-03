@@ -1,0 +1,35 @@
+﻿@model SessionTest.ViewModels.CodeViewModel
+@{
+    ViewData["Title"] = "Cart code";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+<div class="container w-50">
+    <hr />
+    <h4 class="text-center text-warning">A cart with this code will be created for You.</h4>
+    <form><span class="form-control font-weight-bold text-center border rounded">@Model.Id</span></form>
+    <h4 class="text-center text-danger">Remember it.</h4>
+    <h5 class="text-center">Up to 4 hours after the last exit of the site, with this code You will have access to Your cart.</h5>
+    <hr />
+    <p class="text-center">If You have a valid code, please enter it.</p>
+    <form asp-action="Create" asp-controller="Cart" method="post">
+        <input type="hidden" asp-for="Id" value="@Model.Id"/>
+        <div class="form-inline">
+            <label for="code" class="font-weight-bold col-sm-3">Your code</label>
+            <input id="code" type="text" name="Guest" value="@Model.Guest"class="form-control text-center col-sm-9"/>
+        </div>
+        @if (Model.Message != null)
+        {
+            <p class="text-center text-danger">@Model.Message</p>
+            <input type="hidden" asp-for="Message" value="@Model.Message"/>
+        }
+        <div class="d-flex justify-content-around">
+            <button type="submit" class="btn btn-dark nav-link mt-3" name="Guest">Continue</button>
+        </div>
+    </form>
+    <hr />
+    <div class="d-flex justify-content-around">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+    </div>
+</div>

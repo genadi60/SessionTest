@@ -1,0 +1,52 @@
+﻿@model SessionTest.InputModels.ShippingDataInputModel
+
+@{
+    ViewData["Title"] = "Shipping Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<h6 class="text-center">Cart Id: @Model.CartId</h6>
+
+<div class="container w-50">
+    <hr />
+    <form asp-area="" asp-controller="Shipping" asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Country" class="font-weight-bold">Country</label>
+            <input asp-for="@Model.Country" id="Country" type="text" class="form-control" />
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="City" class="font-weight-bold">City</label>
+            <input asp-for="@Model.City" id="City" type="text" class="form-control" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address" class="font-weight-bold">Address</label>
+            <input asp-for="@Model.Address" id="Address" type="text" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="font-weight-bold">Email</label>
+            <input asp-for="@Model.Email" id="Email" type="email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name" class="font-weight-bold">Name</label>
+            <input asp-for="@Model.Name" id="Name" type="text" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="font-weight-bold">Last name</label>
+            <input asp-for="@Model.LastName" id="LastName" type="text" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <hr />
+        <div class="form-group d-flex justify-content-center">
+            <button type="submit" value="@Model.CartId" name="CartId" class="btn btn-dark btn-lg">Submit</button>
+        </div>
+    </form>
+<hr />
+</div>
+

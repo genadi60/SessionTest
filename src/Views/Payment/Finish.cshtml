@@ -1,0 +1,22 @@
+﻿@model SessionTest.ViewModels.PaymentMethodViewModel
+
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<h6 class="text-center">Select Your payment method.</h6>
+<div class="container w-50">
+    <hr />
+    <form asp-action="Confirm" asp-controller="Payment" method="post" class="form-inline d-flex justify-content-around">
+
+        <select class="custom-select form-control" name="Name" id="inputGroupSelect04" aria-label="Example select with button addon"></select>
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" name="CartId" value="@Model.CartId">Submit</button>
+        </div>
+    </form>
+    <hr />
+</div>

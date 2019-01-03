@@ -1,0 +1,19 @@
+﻿@model SessionTest.ViewModels.PaymentMethodViewModel
+
+@{
+    ViewData["Title"] = "PayPal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1 class="text-center">@ViewData["Title"]</h1>
+<h6 class="text-center">Your amount: $ @Model.Total</h6>
+<div class="container w-50">
+    <hr />
+    <form asp-action="Confirm" asp-controller="Payment" method="post" class="form-inline d-flex justify-content-around">
+        <label for="code"></label>
+        <input type="text" id="code" class="form-control" placeholder="Enter code..." />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" name="CartId" value="@Model.CartId">Submit</button>
+        </div>
+    </form>
+    <hr />
+</div>

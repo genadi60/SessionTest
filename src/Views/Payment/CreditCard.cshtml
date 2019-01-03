@@ -1,0 +1,28 @@
+﻿@using SessionTest.ViewModels
+@model SessionTest.ViewModels.PaymentMethodViewModel
+
+@{
+    ViewData["Title"] = "Credit Card";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+<h6 class="text-center">Your amount: $ @Model.Total</h6>
+<div class="container w-50">
+    <hr />
+    <form asp-action="Finish" asp-controller="Payment" method="post" class="form-inline d-flex justify-content-around">
+
+        <label for="code">Verification code</label>
+        <input id="code" type="number" name="Code" placeholder="Verification code..." />
+        <label for="number">Card number</label>
+        <input id="number" type="text" name="Number" placeholder="Card number..." />
+        <label for="date">Expiry date</label>
+        <input id="date" type="date" name="ExpiryDate" placeholder="Expiry date..." />
+        <label for="name">Expiry date</label>
+        <input id="name" type="text" name="HolderName" placeholder="Name of the holder..." />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" name="CartId" value="@Model.CartId">Finish</button>
+        </div>
+    </form>
+    <hr />
+</div>
