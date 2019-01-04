@@ -13,7 +13,7 @@ namespace SessionTest.DataServices.Contracts
 
         Task<CartViewModel> RemoveFromShoppingCart(HttpContext context, string productId, int quantity, string id);
 
-        Task<string> Finish(HttpContext context, string id);
+        Task<string> FinishCart(HttpContext context, string id);
 
         Task Delete(HttpContext context, string id);
 

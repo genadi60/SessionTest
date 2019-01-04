@@ -19,7 +19,7 @@ namespace SessionTest.DataServices
             _cartRepository = cartRepository;
         }
 
-        public ICollection<string> CheckSession(HttpContext context)
+        public ICollection<string> InitialSession(HttpContext context)
         {
             var cacheCartsId = _cartRepository.All().Select(c => c.Id).ToList();
 

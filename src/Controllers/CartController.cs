@@ -43,10 +43,8 @@ namespace SessionTest.Controllers
 
             return View(cartModel);
         }
-
-
         
-        public IActionResult AddToCart(CodeViewModel model, string productId, int quantity)
+        public IActionResult Add(CodeViewModel model, string productId, int quantity)
         {
             string id = _code.Id;
 
@@ -70,27 +68,23 @@ namespace SessionTest.Controllers
             return View("Index", cartModel);
         }
 
-        [Authorize]
-        public IActionResult Remove(string productId, int quantity)
+        
+        public IActionResult Remove(CodeViewModel model, string orderId, int quantity)
         {
             string id = _code.Id;
 
-            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, productId, quantity, id).Result;
+            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, orderId, quantity, id).Result;
 
             return View("Index", cartModel);
         }
 
         [HttpPost]
-        public IActionResult Finish(CodeViewModel model)
+        public IActionResult Finish(CodeViewModel model, string cartId)
         {
-            var id = _code.Id;
-
-            _cartsService.Finish(HttpContext, id);
-
-            return RedirectToAction("Index", "Payment");
+            return RedirectToAction("Index", "Shipping", new{id = cartId});
         }
 
-        [HttpPost]
+        
         public IActionResult Delete(CodeViewModel model)
         {
             var id = _code.Id;
@@ -100,7 +94,7 @@ namespace SessionTest.Controllers
             return View("/views/cart/delete.cshtml");
         }
 
-        [HttpPost]
+        
         public IActionResult Create(CodeViewModel model)
         {
             _code = model;

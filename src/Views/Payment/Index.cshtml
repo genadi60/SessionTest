@@ -1,4 +1,4 @@
-﻿@model SessionTest.InputModels.PaymentMethodInputModel
+﻿@model SessionTest.InputModels.PaymentInputModel
 @{
     ViewData["Title"] = "Payment";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +7,7 @@
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
-<h6 class="text-center">Select Your payment method.</h6>
+<h6 class="text-center">Confirm Your payment method.</h6>
 <div class="container w-50">
     <hr />
     <form asp-action="Confirm" asp-controller="Payment"  method="post" class="form-inline d-flex justify-content-around">
@@ -16,7 +16,7 @@
             <option selected>Choose...</option>
             @foreach (var method in Model.PaymentMethods)
             {
-                <option value="@method.Name">@method.Name</option>
+                <option value="@method..Name">@method.Name</option>
             }
         </select>
         <div class="input-group-append">

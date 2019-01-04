@@ -1,0 +1,43 @@
+﻿@model SessionTest.ViewModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "Order details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+
+<title>@ViewData["Title"]</title>
+
+<div class="jumbotron jumbotron-fluid">
+    <h3 class="display-4 text-center">@ViewData["Title"]</h3>
+    <hr/>
+    <div>
+        <dl class="dl-horizontal text-center">
+            <dt>
+                @Html.DisplayNameFor(model => model.Product.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Product.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Quantity)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Price)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Total)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Total)
+            </dd>
+        </dl>
+        <hr/>
+    </div>
+</div>

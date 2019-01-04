@@ -16,7 +16,6 @@ namespace SessionTest.Controllers
             
         }
 
-        [Authorize]
         public IActionResult Index(string id)
         {
             var inputModel = new ShippingDataInputModel
@@ -26,13 +25,10 @@ namespace SessionTest.Controllers
             return View(inputModel);
         }
 
-        [Authorize]
         [HttpPost]
         public IActionResult Create(ShippingDataInputModel model)
         {
-            ViewBag.ShippingData = model;
-
-            return RedirectToAction("Index", "Payment", new{id = model.CartId});
+            return RedirectToAction("Index", "Payment", model);
         }
     }
 }

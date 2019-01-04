@@ -17,28 +17,31 @@ namespace SessionTest.Controllers
 {
     public class HomeController : BaseController
     {
-        private readonly IProductsService _productsService;
         private readonly IHomeService _homeService;
+        private readonly IOrdersService _ordersService;
+        private readonly IProductsService _productsService;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         
-        public HomeController(IProductsService productsService, IHomeService homeService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public HomeController(IHomeService homeService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOrdersService ordersService, IProductsService productsService)
         {
-            _productsService = productsService;
             _homeService = homeService;
             _signInManager = signInManager;
             _userManager = userManager;
+            _ordersService = ordersService;
+            _productsService = productsService;
         }
 
         public IActionResult Index(IndexViewModel model)
         {
-            var inactiveSessions = _homeService.CheckSession(HttpContext);
+            var inactiveSessions =_homeService.InitialSession(HttpContext);
 
-            if (inactiveSessions.Count > 0)
+
+            if (inactiveSessions.Any())
             {
-                _productsService.InitialProducts(inactiveSessions);
+                _ordersService.InitialDatabase(inactiveSessions);
             }
-            
+
             var products = _productsService.GetAll<ProductViewModel>();
 
             model.Products = products;

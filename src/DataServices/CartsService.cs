@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SessionTest.Common;
 using SessionTest.DataServices.Contracts;
 using SessionTest.Models;
@@ -23,56 +25,36 @@ namespace SessionTest.DataServices
         private readonly IRepository<Order> _orderRepository;
 
         private readonly IRepository<CartOrder> _cartOrderRepository;
-        
-        public CartsService(IRepository<Product> productRepository, 
-            IRepository<Cart> cartRepository, 
-            IRepository<CartOrder> cartOrderRepository, 
-            IRepository<Order> orderRepository)
+
+        private readonly IOrdersService _ordersService;
+
+        private static readonly object Locker = new object();
+
+        public CartsService(IRepository<Product> productRepository,
+            IRepository<Cart> cartRepository,
+            IRepository<CartOrder> cartOrderRepository,
+            IRepository<Order> orderRepository, 
+            IOrdersService ordersService)
         {
             _productRepository = productRepository;
             _cartRepository = cartRepository;
             _cartOrderRepository = cartOrderRepository;
             _orderRepository = orderRepository;
+            _ordersService = ordersService;
         }
 
-        [Authorize]
+
         public CartViewModel GetShoppingCart(HttpContext context, string id)
         {
-            CartViewModel cartModel;
 
-            var cart = _cartRepository.All()
-                .FirstOrDefault(c => c.Id.Equals(id));
+            var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
 
-            if (cart == null)
-            {
-                if (SessionExtensions.Get<CartViewModel>(context.Session, id) == null)
-                {
-                    cartModel = new CartViewModel()
-                    {
-                        Id = id
-                    };
+            var orders = _orderRepository.All().Where(o => o.CartId.Equals(id)).Include(o => o.Product).ToList();
 
-                    SessionExtensions.Set(context.Session, id, cartModel);
-                }
-            }
-            else if(SessionExtensions.Get<CartViewModel>(context.Session, id) == null)
-            {
-                return null;
-            }
+            cart.Orders = orders;
 
-            if (!_cartRepository.All().Any(c => c.Id.Equals(id)))
-            {
-                cart = new Cart
-                {
-                    Id = id
-                };
+            var cartModel = Mapper.Map<CartViewModel>(cart);
 
-                _cartRepository.AddAsync(cart);
-                _cartRepository.SaveChangesAsync();
-            }
-
-            cartModel = SessionExtensions.Get<CartViewModel>(context.Session, id);
-            
             return cartModel;
         }
 
@@ -80,119 +62,147 @@ namespace SessionTest.DataServices
         {
             var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
 
-            var product = _productRepository.All()
-                .FirstOrDefault(p => p.Id.Equals(productId));
+            var orders = _orderRepository.All().Where(o => o.CartId.Equals(id)).Include(o => o.Product).ToList();
 
-            var order = new Order
+            Order order;
+            Product product;
+
+            if (orders.Count > 0 && orders.Any(o => o.ProductId.Equals(productId)))
             {
-                Id = Guid.NewGuid().ToString(),
-                ProductId = product.Id,
-                Product = product,
-                Quantity = quantity,
-                Price = product.Price
-            };
 
-            product.Unit -= quantity;
+                order = orders.FirstOrDefault(o => o.ProductId.Equals(productId));
+                orders.Remove(order);
 
-            
-            _productRepository.Update(product);
-            await _productRepository.SaveChangesAsync();
+                product = _productRepository.All().FirstOrDefault(p => p.Id.Equals(order.ProductId));
+                product.Unit -= quantity;
 
-            await _orderRepository.AddAsync(order);
-            await _orderRepository.SaveChangesAsync();
+                _productRepository.Update(product);
+                await _productRepository.SaveChangesAsync();
 
-            var ordersId = _cartOrderRepository.All().Where(co => co.CartId.Equals(id)).Select(co => co.OrderId).ToList();
+                order.Product = product;
+                order.Quantity += quantity;
 
-            var orders = _orderRepository.All().Where(o => ordersId.Contains(o.Id)).ToList();
+                _orderRepository.Update(order);
+                await _orderRepository.SaveChangesAsync();
+
+            }
+            else
+            {
+                product = _productRepository.All()
+                    .FirstOrDefault(p => p.Id.Equals(productId));
+
+                order = _ordersService.CreateOrder(cart, product, quantity).Result;
+
+                product.Unit -= quantity;
+
+                _productRepository.Update(product);
+                await _productRepository.SaveChangesAsync();
+
+                var cartOrder = new CartOrder
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    CartId = id,
+                    OrderId = order.Id
+                };
+
+                await _cartOrderRepository.AddAsync(cartOrder);
+                await _cartOrderRepository.SaveChangesAsync();
+            }
+
+            orders.Add(order);
 
             cart.Orders = orders;
-            
+
             _cartRepository.Update(cart);
             await _cartRepository.SaveChangesAsync();
 
-            var cartOrder = new CartOrder
-            {
-                Id = Guid.NewGuid().ToString(),
-                CartId = id,
-                OrderId = order.Id
-            };
-
-            await _cartOrderRepository.AddAsync(cartOrder);
-            await _cartOrderRepository.SaveChangesAsync();
-
             var cartModel = Mapper.Map<CartViewModel>(cart);
-
-            SessionExtensions.Set(context.Session, id, cartModel);
 
             return cartModel;
         }
 
-        public async Task<CartViewModel> RemoveFromShoppingCart(HttpContext context, string productId, int quantity, string id)
+        public async Task<CartViewModel> RemoveFromShoppingCart(HttpContext context, string orderId, int quantity, string id)
         {
             var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
 
-            var product = _productRepository.All()
-                .FirstOrDefault(p => p.Id.Equals(productId));
+            var orders = _orderRepository.All().Include(o => o.Product).Where(o => o.CartId.Equals(id)).ToList();
 
-            var order = cart.Orders.FirstOrDefault(o => o.ProductId.Equals(productId));
+            var order = orders.FirstOrDefault(o => o.Id.Equals(orderId));
 
-            cart.Orders.Remove(order);
+            orders.Remove(order);
+
+            var product = order.Product;
+
+            var cartOrder = _cartOrderRepository.All().FirstOrDefault(co => co.CartId.Equals(id) && co.OrderId.Equals(order.Id));
 
             product.Unit += quantity;
 
-            var cartOrder = _cartOrderRepository.All()
-                .FirstOrDefault(co => co.CartId.Equals(cart.Id) && co.OrderId.Equals(order.Id));
+            order.Quantity -= quantity;
 
-            _cartOrderRepository.Delete(cartOrder);
-            await _cartOrderRepository.SaveChangesAsync();
 
             _productRepository.Update(product);
+
             await _productRepository.SaveChangesAsync();
 
-            await _orderRepository.AddAsync(order);
-            await _orderRepository.SaveChangesAsync();
 
-            cart.Orders.Add(order);
+            if (order.Quantity <= 0)
+            {
+                _orderRepository.Delete(order);
+                cart.Orders.Remove(order);
+
+                _cartOrderRepository.Delete(cartOrder);
+                await _cartOrderRepository.SaveChangesAsync();
+            }
+            else
+            {
+                orders.Add(order);
+
+                _orderRepository.Update(order);
+                await _orderRepository.SaveChangesAsync();
+            }
+
+            cart.Orders = orders;
+
             _cartRepository.Update(cart);
             await _cartRepository.SaveChangesAsync();
 
             var cartModel = Mapper.Map<CartViewModel>(cart);
 
-            SessionExtensions.Set(context.Session, id, cartModel);
+            //SessionExtensions.Set(context.Session, id, cartModel);
 
             return cartModel;
         }
 
-        //[HttpPost]
-        public async Task<string> Finish(HttpContext context, string id)
+        
+        public async Task<string> FinishCart(HttpContext context, string id)
         {
-        //    CartViewModel model;
+            //    CartViewModel model;
 
-        //    if (SessionExtensions.Get<CartViewModel>(context.Session, id) == null)
-        //    {
-        //        model = new CartViewModel()
-        //        {
-        //            Id = Guid.NewGuid().ToString()
-        //        };
+            //    if (SessionExtensions.Get<CartViewModel>(context.Session, id) == null)
+            //    {
+            //        model = new CartViewModel()
+            //        {
+            //            Id = Guid.NewGuid().ToString()
+            //        };
 
-        //        SessionExtensions.Set(context.Session, id, model);
-        //    }
+            //        SessionExtensions.Set(context.Session, id, model);
+            //    }
 
-        //    model = SessionExtensions.Get<CartViewModel>(context.Session, id);
+            //    model = SessionExtensions.Get<CartViewModel>(context.Session, id);
 
-        //    ICollection<ProductViewModel> products = model.Products;
+            //    ICollection<ProductViewModel> products = model.Products;
 
-        //    var cart = new Cart
-        //    {
-        //        Id = id,
-        //        Products = products.Select(p => Mapper.Map<Product>(p)).ToList(),
-        //    };
+            //    var cart = new Cart
+            //    {
+            //        Id = id,
+            //        Products = products.Select(p => Mapper.Map<Product>(p)).ToList(),
+            //    };
 
-        //    await _cartRepository.AddAsync(cart);
-        //    await _cartRepository.SaveChangesAsync();
+            //    await _cartRepository.AddAsync(cart);
+            //    await _cartRepository.SaveChangesAsync();
 
-        //    return cart.Id;
-        return "";
+            //    return cart.Id;
+            return "";
         }
 
         public async Task Delete(HttpContext context, string id)
@@ -225,7 +235,7 @@ namespace SessionTest.DataServices
 
         public bool GetValidate(HttpContext context, string id)
         {
-            return SessionExtensions.Get<CartViewModel>(context.Session, id) != null;
+            return _cartRepository.All().Any(c => c.Id.Equals(id));
         }
 
         public async Task<bool> Create(HttpContext context, string id)

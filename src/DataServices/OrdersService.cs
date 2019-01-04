@@ -1,10 +1,12 @@
 ﻿using SessionTest.DataServices.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SessionTest.MappingServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using SessionTest.Common;
 using SessionTest.InputModels;
 using SessionTest.Models;
@@ -15,56 +17,73 @@ namespace SessionTest.DataServices
 {
     public class OrdersService : IOrdersService
     {
-        private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<Order> _ordersRepository;
+        private readonly IRepository<Cart> _cartsRepository;
+        private readonly IRepository<CartOrder> _cartOrdersRepository;
+        private readonly IRepository<Product> _productsRepository;
 
-        private readonly IRepository<Product> _productRepository;
-
-        public OrdersService(IRepository<Order> orderRepository, IRepository<Product> productRepository)
+        public OrdersService(IRepository<Order> ordersRepository, IRepository<Product> productsRepository, IRepository<Cart> cartsRepository, IRepository<CartOrder> cartOrdersRepository)
         {
-            _orderRepository = orderRepository;
-            _productRepository = productRepository;
+            _ordersRepository = ordersRepository;
+            _productsRepository = productsRepository;
+            _cartsRepository = cartsRepository;
+            _cartOrdersRepository = cartOrdersRepository;
+            //HttpContext context, ShippingDataInputModel model, string userId = null
         }
 
-        public async Task<string> Create(HttpContext context, ShippingDataInputModel model, string userId = null)
+        public async Task<Order> CreateOrder(Cart cart, Product product, int quantity)
         {
-            var id = model.CartId;
-            //var cart = SessionExtensions.Get<CartViewModel>(context.Session, userId);
+            var order = new Order
+            {
+                Id = Guid.NewGuid().ToString(),
+                ProductId = product.Id,
+                Product = product,
+                CartId = cart.Id,
+                Cart = cart,
+                Quantity = quantity,
+                Price = product.Price
+            };
 
-            //if (cart == null || !cart.Id.Equals(id))
-            //{
-            //    return null;
-            //}
+            await _ordersRepository.AddAsync(order);
+            await _ordersRepository.SaveChangesAsync();
 
-            
-            //var products = cart.Products.AsQueryable()
-            //    .To<Product>()
-            //    .ToList();
-
-            //var shippingData = Mapper.Map<ShippingData>(model);
-
-            //var order = new Order
-            //{
-            //    Id = Guid.NewGuid().ToString(),
-            //    Products = products,
-            //    ClientId = userId,
-            //    Total = cart.Total,
-            //    ShippingData = shippingData
-            //};
-
-            //await _orderRepository.AddAsync(order);
-            //await _orderRepository.SaveChangesAsync();
-
-            ////foreach (var product in model.Products)
-            ////{
-            ////    product.Unit -= product.Quantity;
-            ////}
-
-            //_productRepository.UpdateRange(products);
-            //await _productRepository.SaveChangesAsync();
-
-            return id;//order.Id;
+            return order;
         }
 
-        
+        public async Task InitialDatabase(ICollection<string> cartsId)
+        {
+            var cartsToDelete = _cartsRepository.All().Where(c => cartsId.Contains(c.Id)).ToList();
+
+            var ordersToDelete = _ordersRepository.All().Where(o => cartsId.Contains(o.CartId)).Include(o => o.Product).ToList();
+
+            var productsToUpdate = new List<Product>();
+
+            foreach (var order in ordersToDelete)
+            {
+                var product = order.Product;
+                product.Unit += order.Quantity;
+
+                productsToUpdate.Add(product);
+            }
+
+            _productsRepository.UpdateRange(productsToUpdate);
+            await _productsRepository.SaveChangesAsync();
+
+            _ordersRepository.DeleteRange(ordersToDelete);
+            await _ordersRepository.SaveChangesAsync();
+
+            _cartsRepository.DeleteRange(cartsToDelete);
+            await _cartsRepository.SaveChangesAsync();
+
+            var cartOrdersToDelete = _cartOrdersRepository.All().Where(co => cartsId.Contains(co.CartId)).ToList();
+
+            _cartOrdersRepository.DeleteRange(cartOrdersToDelete);
+            await _cartOrdersRepository.SaveChangesAsync();
+        }
+
+        public Order GetById(string id)
+        {
+            return _ordersRepository.All().Include(o => o.Product).FirstOrDefault(o => o.Id.Equals(id));
+        }
     }
 }

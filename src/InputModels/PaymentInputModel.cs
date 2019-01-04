@@ -10,8 +10,14 @@ namespace SessionTest.InputModels
     {
         public string Id { get; set; }
 
-        public decimal Cost { get; set; }
+        public decimal Cost => Cart.Total;
 
-        public PaymentMethod PaymentMethod { get; set; }
+        public string CartId { get; set; }
+        public virtual Cart Cart { get; set; }
+
+        public string ShippingDataId { get; set; }
+        public virtual ShippingDataInputModel ShippingData { get; set; }
+
+        public ICollection<PaymentMethodInputModel> PaymentMethods { get; set; }
     }
 }

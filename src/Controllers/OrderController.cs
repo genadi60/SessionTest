@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SessionTest.DataServices.Contracts;
 using SessionTest.InputModels;
 using SessionTest.Models;
+using SessionTest.ViewModels;
 
 namespace SessionTest.Controllers
 {
@@ -50,6 +52,14 @@ namespace SessionTest.Controllers
         public IActionResult Payment()
         {
             return View();
+        }
+
+        public IActionResult Details(string id)
+        {
+            var order = _ordersService.GetById(id);
+            var model = Mapper.Map<OrderViewModel>(order);
+
+            return View(model);
         }
     }
 }

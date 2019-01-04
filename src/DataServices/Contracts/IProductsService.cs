@@ -17,7 +17,7 @@ namespace SessionTest.DataServices.Contracts
 
         IEnumerable<TEntityViewModel> GetAllByCategory<TEntityViewModel>(int categoryId);
 
-        Task InitialProducts(ICollection<string> cartsId);
+        
 
         bool AddRatingToProduct(string productId, int rating);
     }

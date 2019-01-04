@@ -103,38 +103,7 @@ namespace SessionTest.DataServices
                 .Where(p => p.CategoryId == categoryId)
                 .To<TEntityViewModel>();
 
-        public async Task InitialProducts(ICollection<string> cartsId)
-        {
-            var carts = _cartRepository.All().Where(c => cartsId.Contains(c.Id)).ToList();
-
-            var cartOrdersToDelete = _cartOrderRepository.All().Where(co => cartsId.Contains(co.CartId)).ToList();
-
-            var ordersToDeleteId = cartOrdersToDelete.Select(co => co.OrderId).ToList();
-
-            var ordersToDelete = _orderRepository.All().Where(o => ordersToDeleteId.Contains(o.Id)).ToList();
-            
-            var productsToUpdate = new List<Product>();
-
-            foreach (var order in ordersToDelete)
-            {
-                var product = order.Product;
-                product.Unit += order.Quantity;
-
-                productsToUpdate.Add(product);
-            }
-
-            _productsRepository.UpdateRange(productsToUpdate);
-            await _productsRepository.SaveChangesAsync();
-
-            _cartOrderRepository.DeleteRange(cartOrdersToDelete);
-            await _cartOrderRepository.SaveChangesAsync();
-
-            _orderRepository.DeleteRange(ordersToDelete);
-            await _orderRepository.SaveChangesAsync();
-
-            _cartRepository.DeleteRange(carts);
-            await _cartRepository.SaveChangesAsync();
-        }
+        
 
         public bool AddRatingToProduct(string productId, int rating)
         {

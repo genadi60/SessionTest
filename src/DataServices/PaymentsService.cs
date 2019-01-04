@@ -25,13 +25,13 @@ namespace SessionTest.DataServices
             _paymentMethodRepository = paymentMethodRepository;
         }
 
-        public PaymentMethodInputModel GetMethods()
+        public PaymentInputModel GetPayment(ShippingDataInputModel shipping)
         {
             var methods = _paymentMethodRepository.All()
-                .To<PaymentMethodViewModel>()
+                .To<PaymentMethodInputModel>()
                 .ToList();
 
-            var model = new PaymentMethodInputModel
+            var model = new PaymentInputModel
             {
                 PaymentMethods = methods
             };
@@ -39,16 +39,14 @@ namespace SessionTest.DataServices
             return model;
         }
 
-        [Authorize]
-        public bool ConfirmPayment(HttpContext context, PaymentMethodViewModel model, string id)
+        
+        public bool ConfirmPayment(HttpContext context, PaymentViewModel model, string id)
         {
             Cart cart = SessionExtensions.Get<Cart>(context.Session, id);
 
             var payment = new Payment
             {
                 CartId = cart.Id,
-                Cost = cart.Total,
-                PaymentMethodId = model.Id,
             };
             return true;
         }

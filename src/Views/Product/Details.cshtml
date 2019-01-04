@@ -48,7 +48,7 @@
         @if (Model.Unit > 0)
         {
             <div class="d-flex justify-content-center  mb-3">
-                <form asp-area="" asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Id" method="get" class="form-inline w-50 justify-content-center">
+                <form asp-area="" asp-action="Add" asp-controller="Cart" asp-route-id="@Model.Id" method="get" class="form-inline w-50 justify-content-center">
                 @if (Model.Unit > 1)
                 {
                     <label for="quantity" class="font-weight-bold mr-1">Quantity</label>

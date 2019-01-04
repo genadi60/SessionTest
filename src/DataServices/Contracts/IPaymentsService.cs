@@ -10,8 +10,8 @@ namespace SessionTest.DataServices.Contracts
 {
     public interface IPaymentsService
     {
-        PaymentMethodInputModel GetMethods();
+        PaymentInputModel GetPayment(ShippingDataInputModel shipping);
 
-        bool ConfirmPayment(HttpContext context, PaymentMethodViewModel model, string id);
+        bool ConfirmPayment(HttpContext context, PaymentViewModel model, string id);
     }
 }

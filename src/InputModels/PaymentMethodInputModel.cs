@@ -14,6 +14,7 @@ namespace SessionTest.InputModels
             PaymentMethods = new List<PaymentMethodViewModel>();
         }
 
+        public string Name { get; set; }
         public string CartId { get; set; }
         public virtual ICollection<PaymentMethodViewModel> PaymentMethods { get; set; }
     }

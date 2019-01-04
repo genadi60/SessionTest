@@ -26,12 +26,12 @@ namespace SessionTest.Controllers
             _cartRepository = cartRepository;
         }
 
-        [Authorize]
-        public IActionResult Index(string id)
+        
+        public IActionResult Index(ShippingDataInputModel shipping)
         {
-            var model = _paymentsService.GetMethods();
+            var model = _paymentsService.GetPayment(shipping);
 
-            model.CartId = id;
+            
            
             return View(model);
         }

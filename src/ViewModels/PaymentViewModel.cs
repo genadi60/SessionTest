@@ -1,8 +1,12 @@
-﻿using System;
+﻿using SessionTest.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SessionTest.Models
+namespace SessionTest.ViewModels
 {
-    public class Payment
+    public class PaymentViewModel
     {
         public string Id { get; set; }
 
