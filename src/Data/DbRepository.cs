@@ -34,6 +34,11 @@ namespace SessionTest.Data
             this.dbSet.Remove(entity);
         }
 
+        public void DeleteRange(ICollection<TEntity> entities)
+        {
+            this.dbSet.RemoveRange(entities);
+        }
+
         public async Task<int> SaveChangesAsync()
         {
             return await this.context.SaveChangesAsync();

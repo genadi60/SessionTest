@@ -35,6 +35,8 @@ namespace SessionTest.Data
 
         public DbSet<Cart> Carts { get; set; }
 
+        public DbSet<CartOrder> CartOrders { get; set; }
+
         //public DbSet<Receipt> Receipts { get; set; }
 
         //public DbSet<ClientReceipt> ClientReceipts { get; set; }

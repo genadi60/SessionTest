@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using SessionTest.DataServices.Contracts;
 using SessionTest.ViewModels;
+using Constants = SessionTest.Common.Constants;
 
 namespace SessionTest.Controllers
 {
@@ -34,19 +36,34 @@ namespace SessionTest.Controllers
 
             var cartModel = _cartsService.GetShoppingCart(HttpContext, _code.Id);
 
+            if (TempData["Product"] != null)
+            {
+                return RedirectToAction("AddToCart", model);
+            }
+
             return View(cartModel);
         }
 
 
-        [HttpPost]
-        public IActionResult AddToCart(string productId, int quantity)
+        
+        public IActionResult AddToCart(CodeViewModel model, string productId, int quantity)
         {
             string id = _code.Id;
 
             if (id == null)
             {
+                TempData["Product"] = productId;
+                TempData["Quantity"] = quantity;
+
                 return RedirectToAction("Index");
             }
+
+            if (TempData["Product"] != null)
+            {
+                productId = TempData["Product"].ToString();
+                quantity = int.Parse(TempData["Quantity"].ToString());
+            }
+
 
             var cartModel = _cartsService.AddToShoppingCart(HttpContext, productId, quantity, id).Result;
 
@@ -56,17 +73,17 @@ namespace SessionTest.Controllers
         [Authorize]
         public IActionResult Remove(string productId, int quantity)
         {
-            string id = _userManager.GetUserId(User);
+            string id = _code.Id;
 
-            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, productId, quantity, id);
+            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, productId, quantity, id).Result;
 
             return View("Index", cartModel);
         }
 
         [HttpPost]
-        public IActionResult Finish()
+        public IActionResult Finish(CodeViewModel model)
         {
-            var id = _userManager.GetUserId(User);
+            var id = _code.Id;
 
             _cartsService.Finish(HttpContext, id);
 
@@ -74,9 +91,9 @@ namespace SessionTest.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete()
+        public IActionResult Delete(CodeViewModel model)
         {
-            var id = _userManager.GetUserId(User);
+            var id = _code.Id;
 
             _cartsService.Delete(HttpContext, id);
 
@@ -89,17 +106,20 @@ namespace SessionTest.Controllers
             _code = model;
             bool isValid = true;
 
-            if (_code.Guest != null && _code.Message == null)
+            if (_code.Guest != null)
             {
                 isValid = _cartsService.GetValidate(HttpContext, _code.Guest);
 
                 if (isValid)
                 {
                     _code.Id = _code.Guest;
+                    model.Id = _code.Id;
+                    _code.Message = null;
                 }
                 else
                 {
-                    _code.Message = "Invalid code or session has expired. If you want a new cart, press continue";
+                    _code.Message = Constants.INVALID_CODE_MESSAGE;
+                    _code.Guest = null;
                     return RedirectToAction("Code", _code);
                 }
             }
@@ -107,7 +127,7 @@ namespace SessionTest.Controllers
             {
                 bool isCreated = _cartsService.Create(HttpContext, _code.Id).Result;
 
-                if (!isCreated)
+                if (!isCreated && TempData["Product"] == null)
                 {
                     return RedirectToAction("Index", "Home");
                 }

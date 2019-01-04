@@ -11,7 +11,7 @@ namespace SessionTest.DataServices.Contracts
 
         Task<CartViewModel> AddToShoppingCart(HttpContext context, string productId, int quantity, string id);
 
-        CartViewModel RemoveFromShoppingCart(HttpContext context, string productId, int quantity, string id);
+        Task<CartViewModel> RemoveFromShoppingCart(HttpContext context, string productId, int quantity, string id);
 
         Task<string> Finish(HttpContext context, string id);
 

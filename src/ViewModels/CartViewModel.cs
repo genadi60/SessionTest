@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SessionTest.Models;
 
 namespace SessionTest.ViewModels
 {
@@ -7,13 +8,13 @@ namespace SessionTest.ViewModels
     {
         public CartViewModel()
         {
-            Products = new List<ProductViewModel>();
+            Orders = new List<Order>();
         }
 
         public string Id { get; set; }
 
-        public ICollection<ProductViewModel> Products { get; set; }
+        public ICollection<Order> Orders { get; set; }
 
-        public decimal Total => Products.Sum(p => p.Price * p.Quantity);
+        public decimal Total => Orders.Sum(o => o.Total);
     }
 }

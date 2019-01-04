@@ -8,6 +8,6 @@ namespace SessionTest.DataServices.Contracts
 {
     public interface IHomeService
     {
-        bool InitialProducts(HttpContext context, string id);
+        ICollection<string> CheckSession(HttpContext context);
     }
 }

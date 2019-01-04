@@ -21,7 +21,7 @@ namespace SessionTest.Controllers
         private readonly IHomeService _homeService;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-
+        
         public HomeController(IProductsService productsService, IHomeService homeService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             _productsService = productsService;
@@ -32,45 +32,17 @@ namespace SessionTest.Controllers
 
         public IActionResult Index(IndexViewModel model)
         {
-            //var message = new MimeMessage();
-            //message.From.Add(new MailboxAddress(Encoding.UTF8, "SessionTest", "genadimihaylov@gmail.com"));
-            //message.To.Add(new MailboxAddress(Encoding.UTF8, "gena", "genadi60@abv.bg"));
-            //message.Subject = "testing mail in asp.net core";
-            //message.Body =  new TextPart("plain")
-            //{
-            //    Text = "Здравей, честита нова година!"
-            //};
-            //var message = new MailMessage();
-            //message.From = new MailAddress("genadimihaylov@gmail.com");
-            //message.To.Add("genadi60@abv.bg");
-            //message.Body = "Здравей, честита новата 2019 година!";
-            //message.Subject = "testing mail in asp.net core";
+            var inactiveSessions = _homeService.CheckSession(HttpContext);
 
-            //using (var client = new SmtpClient("mysmtpserver"))
-            //{
-            //    client.UseDefaultCredentials = false;
-            //    client.Credentials = new NetworkCredential("username", "password");
-                
-            //    //client.Connect("smtp.gmail.com", 587, false);
-            //    //client.Authenticate("genadimihaylov@gmail.com", "Mariyana");
-            //    client.Send(message);
-            //    client.Dispose();//.Disconnect(true);
-            //}
-            if (_signInManager.IsSignedIn(User))
+            if (inactiveSessions.Count > 0)
             {
-                string id = _userManager.GetUserId(User);
-
-                var isActiveSession = _homeService.InitialProducts(HttpContext, id);
-
-                if (!isActiveSession)
-                {
-                    _productsService.InitialProducts();
-                }
+                _productsService.InitialProducts(inactiveSessions);
             }
             
-
             var products = _productsService.GetAll<ProductViewModel>();
+
             model.Products = products;
+
             return View(model);
         }
 

@@ -18,8 +18,6 @@ namespace SessionTest.ViewModels
 
         public int Unit { get; set; }
 
-        public int Quantity { get; set; }
-
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; }
 

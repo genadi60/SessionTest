@@ -4,17 +4,17 @@
     ViewData["Title"] = "Your Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var products = Model.Products;
+    var orders = Model.Orders.ToList();
     ViewBag.Cart = Model;
 }
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
 <hr />
-@if (products.Any())
+@if (orders.Any())
 {
     <hr />
-    <h5 class="text-center mb-3">Products count: @products.Sum(p => p.Quantity)</h5>
+    <h5 class="text-center mb-3">Products count: @Model.Orders.Sum(p => p.Quantity)</h5>
     <div class="table-responsive">
         <table class="table table-hover table-bordered">
             <thead>
@@ -27,23 +27,23 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var product in products)
+            @foreach (var order in orders)
             {
                 <tr>
-                    <th scope="row" class="align-middle text-center"><h5>@product.Id</h5></th>
-                    <td class="align-middle text-center"><h5>@product.Name</h5></td>
-                    <td class="align-middle text-center"><h5>@product.Quantity</h5></td>
-                    <td class="align-middle text-center"><h5>$ @product.Price</h5></td>
+                    <th scope="row" class="align-middle text-center"><h5>@order.Id</h5></th>
+                    <td class="align-middle text-center"><h5>@order.Product.Name</h5></td>
+                    <td class="align-middle text-center"><h5>@order.Quantity</h5></td>
+                    <td class="align-middle text-center"><h5>$ @order.Price</h5></td>
                     <td class="align-middle text-center">
                         <form method="get" action="/product/details">
-                            <button type="submit" name="id" value="@product.Id" class="btn btn-dark btn-sm">Details</button>
+                            <button type="submit" name="id" value="@order.Id" class="btn btn-dark btn-sm">Details</button>
                         </form>
                         <form method="get" action="/cart/remove">
-                            @if (product.Quantity > 1)
+                            @if (order.Quantity > 1)
                             {
-                                <input class="form-control btn-sm mt-1" type="number" min="1" max="@product.Quantity" id="quantity" name="quantity" placeholder="Quantity"/>
+                                <input class="form-control btn-sm mt-1" type="number" min="1" max="@order.Quantity" id="quantity" name="quantity" placeholder="Quantity"/>
                             }
-                            <button type="submit" name="productId" value="@product.Id" class="btn btn-dark btn-sm mt-1">Remove</button>
+                            <button type="submit" name="productId" value="@order.Id" class="btn btn-dark btn-sm mt-1">Remove</button>
                         </form>
                     </td>
                 </tr>

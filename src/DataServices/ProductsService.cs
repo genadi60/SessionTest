@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SessionTest.Common;
+using SessionTest.Data;
 using SessionTest.DataServices.Contracts;
 using SessionTest.MappingServices;
 using SessionTest.Models;
@@ -14,13 +16,24 @@ namespace SessionTest.DataServices
     {
         private readonly IRepository<Product> _productsRepository;
         private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<Cart> _cartRepository;
+        private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<CartOrder> _cartOrderRepository;
         private readonly IImagesService _imagesService;
+        
 
-        public ProductsService(IRepository<Product> productsRepository, IImagesService imagesService, IRepository<Category> categoryRepository)
+        public ProductsService(IRepository<Product> productsRepository, 
+            IImagesService imagesService, 
+            IRepository<Category> categoryRepository, 
+            IRepository<Cart> cartRepository, 
+            IRepository<Order> orderRepository, IRepository<CartOrder> cartOrderRepository)
         {
             _productsRepository = productsRepository;
             _imagesService = imagesService;
             _categoryRepository = categoryRepository;
+            _cartRepository = cartRepository;
+            _orderRepository = orderRepository;
+            _cartOrderRepository = cartOrderRepository;
         }
 
         public IEnumerable<ProductViewModel> GetAll<ProductViewModel>() => _productsRepository.All().To<ProductViewModel>();
@@ -90,13 +103,37 @@ namespace SessionTest.DataServices
                 .Where(p => p.CategoryId == categoryId)
                 .To<TEntityViewModel>();
 
-        public void InitialProducts()
+        public async Task InitialProducts(ICollection<string> cartsId)
         {
-             _productsRepository.All().ForEachAsync(p => p.Unit += p.TempUnit);
-             _productsRepository.SaveChangesAsync();
+            var carts = _cartRepository.All().Where(c => cartsId.Contains(c.Id)).ToList();
 
-             _productsRepository.All().ForEachAsync(p => p.TempUnit = 0);
-             _productsRepository.SaveChangesAsync();
+            var cartOrdersToDelete = _cartOrderRepository.All().Where(co => cartsId.Contains(co.CartId)).ToList();
+
+            var ordersToDeleteId = cartOrdersToDelete.Select(co => co.OrderId).ToList();
+
+            var ordersToDelete = _orderRepository.All().Where(o => ordersToDeleteId.Contains(o.Id)).ToList();
+            
+            var productsToUpdate = new List<Product>();
+
+            foreach (var order in ordersToDelete)
+            {
+                var product = order.Product;
+                product.Unit += order.Quantity;
+
+                productsToUpdate.Add(product);
+            }
+
+            _productsRepository.UpdateRange(productsToUpdate);
+            await _productsRepository.SaveChangesAsync();
+
+            _cartOrderRepository.DeleteRange(cartOrdersToDelete);
+            await _cartOrderRepository.SaveChangesAsync();
+
+            _orderRepository.DeleteRange(ordersToDelete);
+            await _orderRepository.SaveChangesAsync();
+
+            _cartRepository.DeleteRange(carts);
+            await _cartRepository.SaveChangesAsync();
         }
 
         public bool AddRatingToProduct(string productId, int rating)

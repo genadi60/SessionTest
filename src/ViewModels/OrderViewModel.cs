@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using SessionTest.Models;
 
-namespace SessionTest.Models
+namespace SessionTest.ViewModels
 {
-    public class Order
+    public class OrderViewModel
     {
         public string Id { get; set; }
 
@@ -15,6 +18,5 @@ namespace SessionTest.Models
         public decimal Price { get; set; }
 
         public decimal Total => Quantity * Price;
-
     }
 }

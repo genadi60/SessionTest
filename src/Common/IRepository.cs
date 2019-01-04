@@ -13,6 +13,8 @@ namespace SessionTest.Common
 
         void Delete(TEntity entity);
 
+        void DeleteRange(ICollection<TEntity> entities);
+
         Task<int> SaveChangesAsync();
 
         void Update(TEntity entity);

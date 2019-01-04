@@ -9,13 +9,13 @@ namespace SessionTest.Models
     {
         public Cart()
         {
-            Products = new List<Product>();
+            Orders = new List<Order>();
         }
 
         public string Id { get; set; }
 
-        public decimal Total => Products.Sum(p => p.Price * p.Quantity);
+        public decimal Total => Orders.Sum(o => o.Total);
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

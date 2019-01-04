@@ -28,41 +28,41 @@ namespace SessionTest.DataServices
         public async Task<string> Create(HttpContext context, ShippingDataInputModel model, string userId = null)
         {
             var id = model.CartId;
-            var cart = SessionExtensions.Get<CartViewModel>(context.Session, userId);
+            //var cart = SessionExtensions.Get<CartViewModel>(context.Session, userId);
 
-            if (cart == null || !cart.Id.Equals(id))
-            {
-                return null;
-            }
-
-            
-            var products = cart.Products.AsQueryable()
-                .To<Product>()
-                .ToList();
-
-            var shippingData = Mapper.Map<ShippingData>(model);
-
-            var order = new Order
-            {
-                Id = Guid.NewGuid().ToString(),
-                Products = products,
-                ClientId = userId,
-                Total = cart.Total,
-                ShippingData = shippingData
-            };
-
-            await _orderRepository.AddAsync(order);
-            await _orderRepository.SaveChangesAsync();
-
-            //foreach (var product in model.Products)
+            //if (cart == null || !cart.Id.Equals(id))
             //{
-            //    product.Unit -= product.Quantity;
+            //    return null;
             //}
 
-            _productRepository.UpdateRange(products);
-            await _productRepository.SaveChangesAsync();
+            
+            //var products = cart.Products.AsQueryable()
+            //    .To<Product>()
+            //    .ToList();
 
-            return order.Id;
+            //var shippingData = Mapper.Map<ShippingData>(model);
+
+            //var order = new Order
+            //{
+            //    Id = Guid.NewGuid().ToString(),
+            //    Products = products,
+            //    ClientId = userId,
+            //    Total = cart.Total,
+            //    ShippingData = shippingData
+            //};
+
+            //await _orderRepository.AddAsync(order);
+            //await _orderRepository.SaveChangesAsync();
+
+            ////foreach (var product in model.Products)
+            ////{
+            ////    product.Unit -= product.Quantity;
+            ////}
+
+            //_productRepository.UpdateRange(products);
+            //await _productRepository.SaveChangesAsync();
+
+            return id;//order.Id;
         }
 
         
