@@ -34,13 +34,13 @@ namespace SessionTest.Controllers
 
         public IActionResult Index(IndexViewModel model)
         {
-            var inactiveSessions =_homeService.InitialSession(HttpContext);
+            //var inactiveSessions =_homeService.InitialSession(HttpContext);
 
 
-            if (inactiveSessions.Any())
-            {
-                _ordersService.InitialDatabase(inactiveSessions);
-            }
+            //if (inactiveSessions.Any())
+            //{
+            //    _ordersService.InitialDatabase(inactiveSessions);
+            //}
 
             var products = _productsService.GetAll<ProductViewModel>();
 

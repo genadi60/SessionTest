@@ -1,7 +1,8 @@
-﻿@model SessionTest.ViewModels.CartViewModel
+﻿@using System.Linq
+@model SessionTest.ViewModels.PackageViewModel
 
 @{
-    ViewData["Title"] = "Your Cart";
+    ViewData["Title"] = "Your package";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var orders = Model.Orders.ToList();
@@ -9,12 +10,11 @@
 }
 
 <h1 class="text-center">@ViewData["Title"]</h1>
-<h3 class="text-center">Cart code: @Model.Id</h3>
+<h3 class="text-center">Package number: @Model.Id</h3>
 <hr />
 @if (orders.Any())
 {
     <hr />
-    <h5 class="text-center mb-3">Products count: @Model.Orders.Sum(p => p.Quantity)</h5>
     <div class="table-responsive">
         <table class="table table-hover table-bordered">
             <thead>
@@ -30,7 +30,7 @@
             @foreach (var order in orders)
             {
                 <tr>
-                    <th scope="row" class="align-middle text-center"><h5>@order.Id</h5></th>
+                    <th scope="row" class="align-middle text-center"><h5>@order.ProductId</h5></th>
                     <td class="align-middle text-center"><h5>@order.Product.Name</h5></td>
                     <td class="align-middle text-center"><h5>@order.Quantity</h5></td>
                     <td class="align-middle text-center"><h5>$ @order.Product.Price</h5></td>
@@ -38,36 +38,15 @@
                         <form method="get" action="/product/details">
                             <button type="submit" name="id" value="@order.ProductId" class="btn btn-dark btn-sm">Details</button>
                         </form>
-                        <form method="get" action="/cart/remove">
-                            @if (order.Quantity > 1)
-                            {
-                                <input class="form-control btn-sm mt-1" type="number" min="1" max="@order.Quantity" id="quantity" name="quantity" placeholder="Quantity"/>
-                            }
-                            <button type="submit" name="orderId" value="@order.Id" class="btn btn-dark btn-sm mt-1">Remove</button>
-                        </form>
                     </td>
                 </tr>
             }
             </tbody>
         </table>
     </div>
-    <div class="d-flex justify-content-between">
-        <form method="post" asp-controller="Cart" asp-action="Delete">
-            <button type="submit" class="btn btn-danger">Delete</button>
-        </form>
-        <form method="post" asp-controller="Cart" asp-action="Finish">
-            <button type="submit" class="btn btn-dark" name="cartId" value="@Model.Id">Confirm Orders</button>
-        </form>
-    </div>
     <hr />
     <div class="d-flex justify-content-between">
         <h2>Total:</h2>
-        <h2>$ @Model.Total</h2>
+        <h2>$ @Model.Amount</h2>
     </div>
 }
-else
-{
-    <h4 class="text-center">Your Shopping Cart is empty.<a asp-controller="Home" asp-action="Index"> Start shopping now!</a></h4>
-    
-}
-<hr />

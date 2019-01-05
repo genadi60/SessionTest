@@ -5,8 +5,6 @@ namespace SessionTest.InputModels
 {
     public class ShippingDataInputModel
     {
-        public string Id { get; set; }
-
         public string CartId { get; set; }
         public virtual CartViewModel Cart { get; set; }
 

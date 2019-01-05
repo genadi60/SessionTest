@@ -114,7 +114,8 @@ namespace SessionTest
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IHomeService, HomeService>();
             ////services.AddScoped<IReceiptsService, ReceiptsService>();
-            services.AddScoped<IPaymentsService, PaymentsService>();
+            services.AddScoped<IPackagesService, PackagesService>();
+            services.AddScoped<IPaymentMethodsService, PaymentMethodsService>();
             services.AddSingleton<CodeViewModel, CodeViewModel>();
 
             services.AddMvc(options => { options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

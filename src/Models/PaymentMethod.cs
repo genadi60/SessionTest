@@ -7,14 +7,12 @@ namespace SessionTest.Models
     {
         public PaymentMethod()
         {
-            Payments = new List<Payment>();
+            
         }
 
         public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
-
-        public virtual ICollection<Payment> Payments { get; set; }
     }
 }

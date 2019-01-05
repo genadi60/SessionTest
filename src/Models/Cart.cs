@@ -14,6 +14,8 @@ namespace SessionTest.Models
 
         public string Id { get; set; }
 
+        public bool IsAuthorized { get; set; } = false;
+
         public decimal Total => Orders.Sum(o => o.Total);
 
         public virtual ICollection<Order> Orders { get; set; }

@@ -52,7 +52,7 @@ namespace SessionTest.DataServices
 
         public async Task InitialDatabase(ICollection<string> cartsId)
         {
-            var cartsToDelete = _cartsRepository.All().Where(c => cartsId.Contains(c.Id)).ToList();
+            var cartsToDelete = _cartsRepository.All().Where(c => cartsId.Contains(c.Id) && c.IsAuthorized == false).ToList();
 
             var ordersToDelete = _ordersRepository.All().Where(o => cartsId.Contains(o.CartId)).Include(o => o.Product).ToList();
 
@@ -69,16 +69,16 @@ namespace SessionTest.DataServices
             _productsRepository.UpdateRange(productsToUpdate);
             await _productsRepository.SaveChangesAsync();
 
+            var cartOrdersToDelete = _cartOrdersRepository.All().Where(co => cartsId.Contains(co.CartId)).ToList();
+
+            _cartOrdersRepository.DeleteRange(cartOrdersToDelete);
+            await _cartOrdersRepository.SaveChangesAsync();
+
             _ordersRepository.DeleteRange(ordersToDelete);
             await _ordersRepository.SaveChangesAsync();
 
             _cartsRepository.DeleteRange(cartsToDelete);
             await _cartsRepository.SaveChangesAsync();
-
-            var cartOrdersToDelete = _cartOrdersRepository.All().Where(co => cartsId.Contains(co.CartId)).ToList();
-
-            _cartOrdersRepository.DeleteRange(cartOrdersToDelete);
-            await _cartOrdersRepository.SaveChangesAsync();
         }
 
         public Order GetById(string id)

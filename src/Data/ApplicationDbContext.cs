@@ -31,7 +31,7 @@ namespace SessionTest.Data
 
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
 
-        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Package> Packages { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
 

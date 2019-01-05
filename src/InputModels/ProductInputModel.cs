@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SessionTest.Models;
-using SessionTest.ViewModels;
 
 namespace SessionTest.InputModels
 {
-    public class PaymentMethodInputModel
+    public class ProductInputModel
     {
+        public string Id { get; set; }
+
         public string Name { get; set; }
+
+        public decimal Price { get; set; }
     }
 }

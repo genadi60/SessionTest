@@ -205,6 +205,8 @@ namespace SessionTest.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("IsAuthorized");
+
                     b.HasKey("Id");
 
                     b.ToTable("Carts");
@@ -289,6 +291,8 @@ namespace SessionTest.Migrations
 
                     b.Property<string>("CartId");
 
+                    b.Property<string>("PackageId");
+
                     b.Property<decimal>("Price");
 
                     b.Property<string>("ProductId");
@@ -299,33 +303,37 @@ namespace SessionTest.Migrations
 
                     b.HasIndex("CartId");
 
+                    b.HasIndex("PackageId");
+
                     b.HasIndex("ProductId");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("SessionTest.Models.Payment", b =>
+            modelBuilder.Entity("SessionTest.Models.Package", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CartId");
+                    b.Property<string>("ClientId");
 
-                    b.Property<decimal>("Cost");
-
-                    b.Property<DateTime>("PaidOn");
+                    b.Property<int>("PackageStatus");
 
                     b.Property<int>("PaymentMethodId");
 
                     b.Property<int>("PaymentStatus");
 
+                    b.Property<string>("ShippingDataId");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("PaymentMethodId");
 
-                    b.ToTable("Payments");
+                    b.HasIndex("ShippingDataId");
+
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("SessionTest.Models.PaymentMethod", b =>
@@ -364,6 +372,28 @@ namespace SessionTest.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("SessionTest.Models.ShippingData", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("City");
+
+                    b.Property<string>("Country");
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingData");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -447,21 +477,29 @@ namespace SessionTest.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("CartId");
 
+                    b.HasOne("SessionTest.Models.Package", "Package")
+                        .WithMany("Orders")
+                        .HasForeignKey("PackageId");
+
                     b.HasOne("SessionTest.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId");
                 });
 
-            modelBuilder.Entity("SessionTest.Models.Payment", b =>
+            modelBuilder.Entity("SessionTest.Models.Package", b =>
                 {
-                    b.HasOne("SessionTest.Models.Cart", "Cart")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Client")
                         .WithMany()
-                        .HasForeignKey("CartId");
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("SessionTest.Models.PaymentMethod", "PaymentMethod")
-                        .WithMany("Payments")
+                        .WithMany()
                         .HasForeignKey("PaymentMethodId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SessionTest.Models.ShippingData", "ShippingData")
+                        .WithMany()
+                        .HasForeignKey("ShippingDataId");
                 });
 
             modelBuilder.Entity("SessionTest.Models.Product", b =>

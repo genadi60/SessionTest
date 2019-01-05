@@ -1,0 +1,61 @@
+﻿@model SessionTest.InputModels.PackageInputModel
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var paymentMethods = ViewData["Methods"] as IEnumerable<SelectListItem>;
+
+    var shipping = Model.ShippingData;
+
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<h6 class="text-center">Check Your shipping data</h6>
+<h6 class="text-center">and</h6>
+<h6 class="text-center">confirm Your payment method.</h6>
+<div class="container w-50">
+    <hr />
+    <form asp-action="Index" asp-controller="Package" method="post">
+        <div class="form-group">
+            <label asp-for="ShippingData.Country" class="font-weight-bold">Country</label>
+            <input asp-for="ShippingData.Country" value="@Model.ShippingData.Country" class="form-control text-center" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ShippingData.City" class="font-weight-bold">City</label>
+            <input asp-for="ShippingData.City" value="@Model.ShippingData.City" class="form-control text-center" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ShippingData.Address" class="font-weight-bold">Address</label>
+            <input asp-for="ShippingData.Address" value="@Model.ShippingData.Address" class="form-control text-center" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ShippingData.Email" class="font-weight-bold">Email</label>
+            <input asp-for="ShippingData.Email" value="@Model.ShippingData.Email" class="form-control text-center" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ShippingData.Name" class="font-weight-bold">Name</label>
+            <input asp-for="ShippingData.Name" value="@Model.ShippingData.Name" class="form-control text-center" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ShippingData.LastName" class="font-weight-bold">Last name</label>
+            <input asp-for="ShippingData.LastName" value="@Model.ShippingData.LastName" class="form-control text-center" />
+        </div>
+        <hr />
+        <div class="form-group">
+            <label asp-for="Amount" class="font-weight-bold">Amount</label>
+            <input asp-for="Amount" value="@Model.Amount" class="form-control text-center" />
+        </div>
+        <hr />
+        <div class="form-group">
+            <label asp-for="PaymentMethod" class="control-label"></label>
+            <select asp-items="paymentMethods" asp-for="PaymentMethod" class="form-control"></select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Submit</button>
+        </div>
+        <input type="hidden" asp-for="CartId" value="@Model.CartId" />
+        <input type="hidden" asp-for="ShippingData.CartId" value="@Model.ShippingData.CartId" />
+    </form>
+    <hr />
+</div>

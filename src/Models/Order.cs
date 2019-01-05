@@ -13,6 +13,9 @@ namespace SessionTest.Models
         public string CartId { get; set; }
         public virtual Cart Cart { get; set; }
 
+        public string PackageId { get; set; }
+        public virtual Package Package { get; set; }
+
         public int Quantity { get; set; }
 
         public decimal Price { get; set; }

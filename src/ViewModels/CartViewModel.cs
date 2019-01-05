@@ -8,12 +8,14 @@ namespace SessionTest.ViewModels
     {
         public CartViewModel()
         {
-            Orders = new List<Order>();
+            Orders = new List<OrderViewModel>();
         }
 
         public string Id { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+        public bool IsAuthorized { get; set; }
+
+        public virtual ICollection<OrderViewModel> Orders { get; set; }
 
         public decimal Total => Orders.Sum(o => o.Total);
     }

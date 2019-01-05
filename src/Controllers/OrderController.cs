@@ -29,7 +29,7 @@ namespace SessionTest.Controllers
         {
             
 
-            var model = new 
+            var model = new ShippingDataInputModel
             {
                 CartId = id
             };

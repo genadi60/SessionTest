@@ -28,7 +28,7 @@ namespace SessionTest.Controllers
         [HttpPost]
         public IActionResult Create(ShippingDataInputModel model)
         {
-            return RedirectToAction("Index", "Payment", model);
+            return RedirectToAction("Index", "Package", model);
         }
     }
 }

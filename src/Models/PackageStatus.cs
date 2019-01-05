@@ -1,6 +1,6 @@
 ﻿namespace SessionTest.Models
 {
-    public enum OrderStatus
+    public enum PackageStatus
     {
         Pending = 1,
         Shipped = 2,

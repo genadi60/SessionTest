@@ -14,19 +14,26 @@ namespace SessionTest.Controllers
     {
         private readonly ICartsService _cartsService;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private CodeViewModel _code;
 
-        public CartController(ICartsService cartsService, UserManager<IdentityUser> userManager, CodeViewModel code)
+        public CartController(ICartsService cartsService, UserManager<IdentityUser> userManager, CodeViewModel code, SignInManager<IdentityUser> signInManager)
         {
             _cartsService = cartsService;
             _userManager = userManager;
             _code = code;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index(CodeViewModel model)
         {
             _code.Id = _userManager.GetUserId(User)??model.Id;
 
+            if (_signInManager.IsSignedIn(User))
+            {
+                _code.IsAuthorized = true;
+            }
+            
             if (_code.Id == null)
             {
                 _code.Id = Guid.NewGuid().ToString();
@@ -38,7 +45,7 @@ namespace SessionTest.Controllers
 
             if (TempData["Product"] != null)
             {
-                return RedirectToAction("AddToCart", model);
+                return RedirectToAction("Add", model);
             }
 
             return View(cartModel);
@@ -119,7 +126,7 @@ namespace SessionTest.Controllers
             }
             else
             {
-                bool isCreated = _cartsService.Create(HttpContext, _code.Id).Result;
+                bool isCreated = _cartsService.Create(HttpContext, _code).Result;
 
                 if (!isCreated && TempData["Product"] == null)
                 {

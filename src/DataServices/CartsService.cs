@@ -208,29 +208,34 @@ namespace SessionTest.DataServices
         public async Task Delete(HttpContext context, string id)
         {
 
-            //var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
-            //var productsInCart = cart.Products;
-            //var productsInCartId = productsInCart.Select(p => p.Id).ToList();
+            var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
 
-            //var products = _productRepository.All().Where(p => productsInCartId.Contains(p.Id)).ToList();
+            var orders = _orderRepository.All().Include(o => o.Product).Where(o => o.CartId.Equals(id)).ToList();
 
-            //if (products.Count > 0)
-            //{
-            //    foreach (var product in products)
-            //    {
-            //        var productModel = productsInCart.Single(p => p.Id.Equals(product.Id));
-            //        product.Unit += productModel.Quantity;
-            //        product.TempUnit -= productModel.Quantity;
-            //    }
+            var cartOrders = _cartOrderRepository.All().Where(co => co.CartId.Equals(id)).ToList();
 
-            //    _productRepository.UpdateRange(products);
-            //    await _productRepository.SaveChangesAsync();
-            //}
+            _cartOrderRepository.DeleteRange(cartOrders);
+            await _cartOrderRepository.SaveChangesAsync();
 
-            //context.Session.Remove(id);
+            var products = new List<Product>();
 
-            //_cartRepository.Delete(cart);
-            //await _cartRepository.SaveChangesAsync();
+            foreach (var order in orders)
+            {
+                var product = order.Product;
+                product.Unit += order.Quantity;
+                products.Add(product);
+            }
+
+            _cartRepository.Delete(cart);
+            await _cartRepository.SaveChangesAsync();
+
+            _orderRepository.DeleteRange(orders);
+            await _orderRepository.SaveChangesAsync();
+
+            _productRepository.UpdateRange(products);
+            await _productRepository.SaveChangesAsync();
+            
+            SessionExtensions.Set<Cart>(context.Session, id, null);
         }
 
         public bool GetValidate(HttpContext context, string id)
@@ -238,11 +243,12 @@ namespace SessionTest.DataServices
             return _cartRepository.All().Any(c => c.Id.Equals(id));
         }
 
-        public async Task<bool> Create(HttpContext context, string id)
+        public async Task<bool> Create(HttpContext context, CodeViewModel codeModel)
         {
             var cart = new Cart
             {
-                Id = id
+                Id = codeModel.Id,
+                IsAuthorized = codeModel.IsAuthorized
             };
 
             await _cartRepository.AddAsync(cart);
@@ -250,12 +256,12 @@ namespace SessionTest.DataServices
 
             var model = new CartViewModel()
             {
-                Id = id
+                Id = codeModel.Id
             };
 
-            SessionExtensions.Set(context.Session, id, model);
+            SessionExtensions.Set(context.Session, model.Id, model);
 
-            return SessionExtensions.Get<CartViewModel>(context.Session, id) != null;
+            return SessionExtensions.Get<CartViewModel>(context.Session, model.Id) != null;
         }
     }
 }

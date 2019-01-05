@@ -19,6 +19,6 @@ namespace SessionTest.DataServices.Contracts
 
         bool GetValidate(HttpContext context, string id);
 
-        Task<bool> Create(HttpContext context, string id);
+        Task<bool> Create(HttpContext context, CodeViewModel model);
     }
 }

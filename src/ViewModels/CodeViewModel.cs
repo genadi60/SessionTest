@@ -9,6 +9,8 @@ namespace SessionTest.ViewModels
     {
         public string Id { get; set; }
 
+        public bool IsAuthorized { get; set; }
+
         public string Guest { get; set; }
 
         public string Message { get; set; }

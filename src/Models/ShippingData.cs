@@ -1,6 +1,9 @@
-﻿namespace SessionTest.Models
+﻿using SessionTest.InputModels;
+using SessionTest.MappingServices;
+
+namespace SessionTest.Models
 {
-    public class ShippingData
+    public class ShippingData : IMapFrom<ShippingDataInputModel>
     {
         public string Id { get; set; }
 

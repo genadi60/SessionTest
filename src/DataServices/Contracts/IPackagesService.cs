@@ -8,10 +8,12 @@ using SessionTest.ViewModels;
 
 namespace SessionTest.DataServices.Contracts
 {
-    public interface IPaymentsService
+    public interface IPackagesService
     {
-        PaymentInputModel GetPayment(ShippingDataInputModel shipping);
+        PackageInputModel GetPackage(ShippingDataInputModel shipping);
 
-        bool ConfirmPayment(HttpContext context, PaymentViewModel model, string id);
+        PackageViewModel GetPackageViewModel(string id);
+
+        Task<string> ConfirmPackage(HttpContext context, PackageViewModel model);
     }
 }
