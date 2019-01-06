@@ -13,30 +13,30 @@ namespace SessionTest
         public static void Seed(ApplicationDbContext context)
         {
 
-            //var categories = new List<Category>
-            //{
-            //    new Category{Name = "Electronics"},
-            //    new Category{Name = "Bullshits"},
-            //    new Category{Name = "Something Else"},
-            //    new Category{Name = "Whatever"},
-            //    new Category{Name = "Other"}
-            //};
+            var categories = new List<Category>
+            {
+                new Category{Name = "Electronics"},
+                new Category{Name = "Bullshits"},
+                new Category{Name = "Something Else"},
+                new Category{Name = "Whatever"},
+                new Category{Name = "Other"}
+            };
 
-            //context.Categories.AddRange(categories);
-            //context.SaveChanges();
+            context.Categories.AddRange(categories);
+            context.SaveChanges();
 
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    var product = new Product
-            //    {
-            //        Name = $"Product {i}",
-            //        Description = $"Description of product {i}",
-            //        Price = (decimal)(new Random().NextDouble() * (new Random()).Next(10000)),
-            //        CategoryId = new Random().Next(1,6)
-            //    };
+            for (int i = 0; i < 10; i++)
+            {
+                var product = new Product
+                {
+                    Name = $"Product {i}",
+                    Description = $"Description of product {i}",
+                    Price = (decimal)(new Random().NextDouble() * (new Random()).Next(10000)),
+                    CategoryId = new Random().Next(1, 6)
+                };
 
-            //    context.Products.Add(product);
-            //}
+                context.Products.Add(product);
+            }
 
             var paymentMethods = new List<PaymentMethod>
             {
@@ -48,18 +48,18 @@ namespace SessionTest
             context.PaymentMethods.AddRange(paymentMethods);
             context.SaveChanges();
 
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    var blog = new Blog
-            //    {
-            //        Title = $"BlogTitle{i}",
-            //        Content = $"{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i} nqma takyv blog tova e voenno obuchenie. Vnimanie: Voenno Obuchenie. ALARM, Trevoga, Zaboga. Voenno obuchenie sssssssssssssssssssssss"
-            //    };
+            for (int i = 0; i < 20; i++)
+            {
+                var blog = new Blog
+                {
+                    Title = $"BlogTitle{i}",
+                    Content = $"{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i}{i} nqma takyv blog tova e voenno obuchenie. Vnimanie: Voenno Obuchenie. ALARM, Trevoga, Zaboga. Voenno obuchenie sssssssssssssssssssssss"
+                };
 
-            //    context.Blogs.Add(blog);
-            //}
+                context.Blogs.Add(blog);
+            }
 
-            //context.SaveChanges();
+            context.SaveChanges();
         }
 
         public static void SeedPictures(ApplicationDbContext context)

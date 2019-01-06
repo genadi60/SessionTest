@@ -3,6 +3,9 @@
 
 @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
 {
+    <li class="nav-item">
+        <a class="nav-link" asp-area="" asp-controller="Package" asp-action="Packages">Packages</a>
+    </li>
     <div class="dropdown">
         <button class="btn btn-link navbar-btn nav-link navbar-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Create

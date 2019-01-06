@@ -91,9 +91,9 @@ namespace SessionTest.DataServices
                 product = _productRepository.All()
                     .FirstOrDefault(p => p.Id.Equals(productId));
 
-                order = _ordersService.CreateOrder(cart, product, quantity).Result;
-
                 product.Unit -= quantity;
+
+                order = _ordersService.CreateOrder(cart, product, quantity).Result;
 
                 _productRepository.Update(product);
                 await _productRepository.SaveChangesAsync();
@@ -212,10 +212,12 @@ namespace SessionTest.DataServices
 
             var orders = _orderRepository.All().Include(o => o.Product).Where(o => o.CartId.Equals(id)).ToList();
 
-            var cartOrders = _cartOrderRepository.All().Where(co => co.CartId.Equals(id)).ToList();
+            IList<CartOrder> cartOrders = new List<CartOrder>();
 
-            _cartOrderRepository.DeleteRange(cartOrders);
-            await _cartOrderRepository.SaveChangesAsync();
+            if (_cartOrderRepository.All().Any(co => co.CartId.Equals(id)))
+            {
+                cartOrders = _cartOrderRepository.All().Where(co => co.CartId.Equals(id)).ToList();
+            }
 
             var products = new List<Product>();
 
@@ -226,16 +228,22 @@ namespace SessionTest.DataServices
                 products.Add(product);
             }
 
-            _cartRepository.Delete(cart);
-            await _cartRepository.SaveChangesAsync();
+            _productRepository.UpdateRange(products);
+            await _productRepository.SaveChangesAsync();
+
+            if (cartOrders.Count > 0)
+            {
+                _cartOrderRepository.DeleteRange(cartOrders);
+                await _cartOrderRepository.SaveChangesAsync();
+            }
 
             _orderRepository.DeleteRange(orders);
             await _orderRepository.SaveChangesAsync();
 
-            _productRepository.UpdateRange(products);
-            await _productRepository.SaveChangesAsync();
-            
-            SessionExtensions.Set<Cart>(context.Session, id, null);
+            _cartRepository.Delete(cart);
+            await _cartRepository.SaveChangesAsync();
+
+            context.Session.Clear();
         }
 
         public bool GetValidate(HttpContext context, string id)
@@ -258,10 +266,17 @@ namespace SessionTest.DataServices
             {
                 Id = codeModel.Id
             };
+            if (context.Session.Get<CartViewModel>(codeModel.Id) == null)
+            {
+                context.Session.Set<CartViewModel>(codeModel.Id, model);
+            }
+            
 
-            SessionExtensions.Set(context.Session, model.Id, model);
+            var sessionModel = context.Session.Get<CartViewModel>(codeModel.Id);
 
-            return SessionExtensions.Get<CartViewModel>(context.Session, model.Id) != null;
+            return sessionModel != null;
         }
+
+        
     }
 }

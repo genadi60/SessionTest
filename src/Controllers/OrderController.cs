@@ -24,11 +24,8 @@ namespace SessionTest.Controllers
             _userManager = userManager;
         }
 
-        [Authorize]
         public IActionResult Create(string id)
         {
-            
-
             var model = new ShippingDataInputModel
             {
                 CartId = id
@@ -37,29 +34,34 @@ namespace SessionTest.Controllers
             return View("/views/shipping/index.cshtml", model);
         }
 
-        [HttpPost]
-        public IActionResult Create(ShippingDataInputModel model)
-        {
-            var userId = _userManager.GetUserId(User);
+        //[HttpPost]
+        //public IActionResult Create(ShippingDataInputModel model)
+        //{
+        //    var userId = _userManager.GetUserId(User);
             
 
-            //_ordersService.Create(HttpContext, model, userId);
+        //    //_ordersService.Create(HttpContext, model, userId);
 
 
-            return RedirectToAction("Payment");
-        }
+        //    return RedirectToAction("Payment");
+        //}
 
-        public IActionResult Payment()
-        {
-            return View();
-        }
+        //public IActionResult Payment()
+        //{
+        //    return View();
+        //}
 
+        [HttpPost]
         public IActionResult Details(string id)
         {
-            var order = _ordersService.GetById(id);
-            var model = Mapper.Map<OrderViewModel>(order);
+            return RedirectToAction("ConfirmDetails", new { id = id });
+        }
 
-            return View(model);
+        public IActionResult ConfirmDetails(string id)
+        {
+            var order = _ordersService.GetOrderViewModel(id);
+
+            return View("Details", order);
         }
     }
 }

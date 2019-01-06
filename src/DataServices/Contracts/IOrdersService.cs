@@ -3,6 +3,7 @@ using SessionTest.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SessionTest.InputModels;
+using SessionTest.ViewModels;
 
 namespace SessionTest.DataServices.Contracts
 {
@@ -13,5 +14,7 @@ namespace SessionTest.DataServices.Contracts
         Task InitialDatabase(ICollection<string> cartsId);
 
         Order GetById(string id);
+
+        OrderViewModel GetOrderViewModel(string id);
     }
 }

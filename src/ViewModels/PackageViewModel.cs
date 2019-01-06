@@ -13,16 +13,20 @@ namespace SessionTest.ViewModels
     {
         public string Id { get; set; }
 
-        public decimal Amount { get; set; }
+        public decimal Amount => Orders.Sum(o => o.Total);
 
         public string CartId { get; set; }
        
         public string PaymentMethod { get; set; }
 
+        public DateTime IssuedOn { get; set; }
+
         public string ClientId { get; set; }
         public IdentityUser Client { get; set; }
         
-        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Active;
+        public PaymentStatus PaymentStatus { get; set; }
+
+        public PackageStatus PackageStatus { get; set; }
 
         public virtual ICollection<OrderViewModel> Orders { get; set; }
 

@@ -6,7 +6,7 @@ using SessionTest.Models;
 
 namespace SessionTest.ViewModels
 {
-    public class MyPackagesViewModel
+    public class AllPackagesViewModel
     {
         public ICollection<PackageViewModel> Packages { get; set; } = new List<PackageViewModel>();
     }

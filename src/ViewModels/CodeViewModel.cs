@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SessionTest.ViewModels.Contracts;
 
 namespace SessionTest.ViewModels
 {
-    public class CodeViewModel
+    public class CodeViewModel : ICodeViewModel
     {
         public string Id { get; set; }
 

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SessionTest.Data;
 
 namespace SessionTest.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181231133537_BlogImplement2")]
+    partial class BlogImplement2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,36 +202,6 @@ namespace SessionTest.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("SessionTest.Models.Cart", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsAuthorized");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.CartOrder", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CartId");
-
-                    b.Property<string>("OrderId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("CartOrders");
-                });
-
             modelBuilder.Entity("SessionTest.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -255,7 +227,8 @@ namespace SessionTest.Migrations
                     b.Property<string>("ProductId")
                         .IsRequired();
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -284,74 +257,6 @@ namespace SessionTest.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("SessionTest.Models.Order", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CartId");
-
-                    b.Property<string>("PackageId");
-
-                    b.Property<decimal>("Price");
-
-                    b.Property<string>("ProductId");
-
-                    b.Property<int>("Quantity");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("PackageId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.Package", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ClientId");
-
-                    b.Property<DateTime>("IssuedOn");
-
-                    b.Property<int>("PackageStatus");
-
-                    b.Property<int>("PaymentMethodId");
-
-                    b.Property<int>("PaymentStatus");
-
-                    b.Property<string>("ShippingDataId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("PaymentMethodId");
-
-                    b.HasIndex("ShippingDataId");
-
-                    b.ToTable("Packages");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.PaymentMethod", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PaymentMethods");
-                });
-
             modelBuilder.Entity("SessionTest.Models.Product", b =>
                 {
                     b.Property<string>("Id")
@@ -374,28 +279,6 @@ namespace SessionTest.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.ShippingData", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Address");
-
-                    b.Property<string>("City");
-
-                    b.Property<string>("Country");
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("LastName");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ShippingData");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -443,17 +326,6 @@ namespace SessionTest.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SessionTest.Models.CartOrder", b =>
-                {
-                    b.HasOne("SessionTest.Models.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId");
-
-                    b.HasOne("SessionTest.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
-                });
-
             modelBuilder.Entity("SessionTest.Models.Comment", b =>
                 {
                     b.HasOne("SessionTest.Models.Product", "Product")
@@ -463,7 +335,8 @@ namespace SessionTest.Migrations
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SessionTest.Models.Image", b =>
@@ -471,37 +344,6 @@ namespace SessionTest.Migrations
                     b.HasOne("SessionTest.Models.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.Order", b =>
-                {
-                    b.HasOne("SessionTest.Models.Cart", "Cart")
-                        .WithMany("Orders")
-                        .HasForeignKey("CartId");
-
-                    b.HasOne("SessionTest.Models.Package", "Package")
-                        .WithMany("Orders")
-                        .HasForeignKey("PackageId");
-
-                    b.HasOne("SessionTest.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId");
-                });
-
-            modelBuilder.Entity("SessionTest.Models.Package", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
-
-                    b.HasOne("SessionTest.Models.PaymentMethod", "PaymentMethod")
-                        .WithMany()
-                        .HasForeignKey("PaymentMethodId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SessionTest.Models.ShippingData", "ShippingData")
-                        .WithMany()
-                        .HasForeignKey("ShippingDataId");
                 });
 
             modelBuilder.Entity("SessionTest.Models.Product", b =>

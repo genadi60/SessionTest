@@ -52,9 +52,52 @@ namespace SessionTest.Controllers
             return View("Details", packageViewModel);
         }
 
-        public IActionResult MyPackages()
+        public IActionResult Packages()
         {
+            var model = _packagesService.All();
 
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Details(string id)
+        {
+            return RedirectToAction("ConfirmDetails", new {id = id});
+        }
+
+        public IActionResult ConfirmDetails(string id)
+        {
+            var package = _packagesService.GetPackageViewModel(id);
+
+            return View("Details", package);
+        }
+
+
+
+        [HttpPost]
+        public IActionResult Deliver(string id)
+        {
+            return RedirectToAction("ConfirmDeliver", new {id = id});
+        }
+
+        public IActionResult ConfirmDeliver(string id)
+        {
+            _packagesService.ConfirmDeliver(id);
+
+            return RedirectToAction("Packages");
+        }
+
+        [HttpPost]
+        public IActionResult Acquire(string id)
+        {
+            return RedirectToAction("ConfirmAcquire", new { id = id });
+        }
+
+        public IActionResult ConfirmAcquire(string id)
+        {
+            _packagesService.ConfirmAcquire(id);
+
+            return RedirectToAction("Packages");
         }
     }
 }

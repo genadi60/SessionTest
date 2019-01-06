@@ -116,5 +116,38 @@ namespace SessionTest.DataServices
 
             return model;
         }
+
+        
+        public AllPackagesViewModel All()
+        {
+            var packages = _packageRepository.All().Include(p => p.Orders).To<PackageViewModel>().ToList();
+
+            var model = new AllPackagesViewModel
+            {
+                Packages = packages
+            };
+
+            return model;
+        }
+
+        public async Task ConfirmDeliver(string id)
+        {
+            var package = _packageRepository.All().FirstOrDefault(p => p.Id.Equals(id));
+
+            package.PackageStatus = PackageStatus.Delivered;
+
+            _packageRepository.Update(package);
+            await _packageRepository.SaveChangesAsync();
+        }
+
+        public async Task ConfirmAcquire(string id)
+        {
+            var package = _packageRepository.All().FirstOrDefault(p => p.Id.Equals(id));
+
+            package.PackageStatus = PackageStatus.Acquired;
+
+            _packageRepository.Update(package);
+            await _packageRepository.SaveChangesAsync();
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using SessionTest.DataServices.Contracts;
 using SessionTest.ViewModels;
+using SessionTest.ViewModels.Contracts;
 using Constants = SessionTest.Common.Constants;
 
 namespace SessionTest.Controllers
@@ -25,9 +26,9 @@ namespace SessionTest.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult Index(CodeViewModel model)
+        public IActionResult Index(CodeViewModel model = null)
         {
-            _code.Id = _userManager.GetUserId(User)??model.Id;
+            _code.Id = _userManager.GetUserId(User)?? model?.Id;
 
             if (_signInManager.IsSignedIn(User))
             {
@@ -38,20 +39,29 @@ namespace SessionTest.Controllers
             {
                 _code.Id = Guid.NewGuid().ToString();
 
-                return RedirectToAction("Code", _code);
+                return RedirectToAction("Code");
             }
 
+            bool isValid = true;
+
+            isValid = _cartsService.GetValidate(HttpContext, _code.Id);
+
+            if (!isValid)
+            {
+                return RedirectToAction("Create", _code);
+            }
+            
             var cartModel = _cartsService.GetShoppingCart(HttpContext, _code.Id);
 
             if (TempData["Product"] != null)
             {
-                return RedirectToAction("Add", model);
+                return RedirectToAction("Add", _code);
             }
 
             return View(cartModel);
         }
         
-        public IActionResult Add(CodeViewModel model, string productId, int quantity)
+        public IActionResult Add(string productId, int quantity)
         {
             string id = _code.Id;
 
@@ -74,47 +84,50 @@ namespace SessionTest.Controllers
 
             return View("Index", cartModel);
         }
-
         
-        public IActionResult Remove(CodeViewModel model, string orderId, int quantity)
+        public IActionResult Remove(string orderId, int quantity)
         {
-            string id = _code.Id;
+            string cartId = _code.Id;
 
-            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, orderId, quantity, id).Result;
+            var cartModel = _cartsService.RemoveFromShoppingCart(HttpContext, orderId, quantity, cartId).Result;
 
             return View("Index", cartModel);
         }
 
         [HttpPost]
-        public IActionResult Finish(CodeViewModel model, string cartId)
+        public IActionResult Finish(string cartId)
         {
             return RedirectToAction("Index", "Shipping", new{id = cartId});
         }
-
         
-        public IActionResult Delete(CodeViewModel model)
+        [HttpPost]
+        public IActionResult ConfirmDelete(string cartId)
         {
-            var id = _code.Id;
-
-            _cartsService.Delete(HttpContext, id);
-
-            return View("/views/cart/delete.cshtml");
+            return RedirectToAction("Delete", new {cartId});
         }
 
-        
+        public IActionResult Delete(string cartId)
+        {
+            _cartsService.Delete(HttpContext, cartId);
+
+            return View();
+        }
+
+
+
         public IActionResult Create(CodeViewModel model)
         {
             _code = model;
-            bool isValid = true;
-
+            
             if (_code.Guest != null)
             {
+                bool isValid = true;
+
                 isValid = _cartsService.GetValidate(HttpContext, _code.Guest);
 
                 if (isValid)
                 {
                     _code.Id = _code.Guest;
-                    model.Id = _code.Id;
                     _code.Message = null;
                 }
                 else
@@ -135,12 +148,12 @@ namespace SessionTest.Controllers
                 
             }
             
-            return RedirectToAction("Index", model);
+            return RedirectToAction("Index", _code);
         }
 
-        public IActionResult Code(CodeViewModel model)
+        public IActionResult Code()
         {
-            return View(model);
+            return View(_code);
         }
     }
 }

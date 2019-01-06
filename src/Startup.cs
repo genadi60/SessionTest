@@ -21,6 +21,7 @@ using SessionTest.DataServices.Contracts;
 using SessionTest.MappingServices;
 using SessionTest.Models;
 using SessionTest.ViewModels;
+using SessionTest.ViewModels.Contracts;
 using WebshopApp.Services.DataServices;
 
 namespace SessionTest
@@ -116,7 +117,7 @@ namespace SessionTest
             ////services.AddScoped<IReceiptsService, ReceiptsService>();
             services.AddScoped<IPackagesService, PackagesService>();
             services.AddScoped<IPaymentMethodsService, PaymentMethodsService>();
-            services.AddSingleton<CodeViewModel, CodeViewModel>();
+            services.AddSingleton<CodeViewModel>();
 
             services.AddMvc(options => { options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -139,7 +140,7 @@ namespace SessionTest
 
             ////Seeder.Seed(context);
             ////Seeder.SeedPictures(context);
-            Seeder.SeedRoles(context);
+            ////Seeder.SeedRoles(context);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

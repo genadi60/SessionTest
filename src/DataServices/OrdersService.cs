@@ -85,5 +85,12 @@ namespace SessionTest.DataServices
         {
             return _ordersRepository.All().Include(o => o.Product).FirstOrDefault(o => o.Id.Equals(id));
         }
+
+        public OrderViewModel GetOrderViewModel(string id)
+        {
+            var model = _ordersRepository.All().To<OrderViewModel>().FirstOrDefault(p => p.Id.Equals(id));
+
+            return model;
+        }
     }
 }

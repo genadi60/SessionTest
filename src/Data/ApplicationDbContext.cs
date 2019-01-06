@@ -25,7 +25,7 @@ namespace SessionTest.Data
 
         public DbSet<Blog> Blogs { get; set; }
 
-        public DbSet<IdentityUser> AspNetUsers { get; set; }
+        //public DbSet<IdentityUser> AspNetUsers { get; set; }
 
         public DbSet<Order> Orders { get; set; }
 

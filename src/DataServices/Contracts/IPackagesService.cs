@@ -15,5 +15,11 @@ namespace SessionTest.DataServices.Contracts
         PackageViewModel GetPackageViewModel(string id);
 
         Task<string> ConfirmPackage(HttpContext context, PackageViewModel model);
+
+        AllPackagesViewModel All();
+
+        Task ConfirmDeliver(string id);
+
+        Task ConfirmAcquire(string id);
     }
 }
