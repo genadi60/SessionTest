@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SessionTest.DataServices.Contracts;
 using SessionTest.InputModels;
-using SessionTest.Models;
-using SessionTest.ViewModels;
 
 namespace SessionTest.Controllers
 {
@@ -33,23 +29,6 @@ namespace SessionTest.Controllers
 
             return View("/views/shipping/index.cshtml", model);
         }
-
-        //[HttpPost]
-        //public IActionResult Create(ShippingDataInputModel model)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-            
-
-        //    //_ordersService.Create(HttpContext, model, userId);
-
-
-        //    return RedirectToAction("Payment");
-        //}
-
-        //public IActionResult Payment()
-        //{
-        //    return View();
-        //}
 
         [HttpPost]
         public IActionResult Details(string id)

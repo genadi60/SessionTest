@@ -1,6 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 
+@if (!SignInManager.IsSignedIn(User) || !User.IsInRole("Admin"))
+{
+    <li class="nav-item">
+        <form asp-action="PackageDetails" asp-controller="Package" class="form-inline input-group input-group-sm mt-1">
+            <input class="form-control mr-sm-1 rounded" name="search" type="search" placeholder="Package Code" aria-label="Search">
+            <button class="btn btn-outline-secondary btn-sm my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+        </form>
+    </li>
+}
 @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
 {
     <li class="nav-item">

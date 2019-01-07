@@ -60,6 +60,12 @@ namespace SessionTest.Controllers
         }
 
         [HttpPost]
+        public IActionResult PackageDetails(string search)
+        {
+            return RedirectToAction("ConfirmDetails", new { id = search });
+        }
+
+        [HttpPost]
         public IActionResult Details(string id)
         {
             return RedirectToAction("ConfirmDetails", new {id = id});
@@ -67,7 +73,16 @@ namespace SessionTest.Controllers
 
         public IActionResult ConfirmDetails(string id)
         {
-            var package = _packagesService.GetPackageViewModel(id);
+            PackageViewModel package = null;
+            if (id != null)
+            {
+                package = _packagesService.GetPackageViewModel(id);
+            }
+            
+            if (package == null || id == null)
+            {
+                return View("Invalid");
+            }
 
             return View("Details", package);
         }

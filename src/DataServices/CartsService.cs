@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SessionTest.Common;
 using SessionTest.DataServices.Contracts;
+using SessionTest.MappingServices;
 using SessionTest.Models;
 using SessionTest.ViewModels;
-using SessionExtensions = SessionTest.Common.SessionExtensions;
 
 namespace SessionTest.DataServices
 {
@@ -47,13 +44,11 @@ namespace SessionTest.DataServices
         public CartViewModel GetShoppingCart(HttpContext context, string id)
         {
 
-            var cart = _cartRepository.All().FirstOrDefault(c => c.Id.Equals(id));
-
-            var orders = _orderRepository.All().Where(o => o.CartId.Equals(id)).Include(o => o.Product).ToList();
-
-            cart.Orders = orders;
-
-            var cartModel = Mapper.Map<CartViewModel>(cart);
+            var cartModel = _cartRepository.All()
+                .Include(c => c.Orders)
+                .ThenInclude(o => o.Product)
+                .To<CartViewModel>()
+                .FirstOrDefault(c => c.Id.Equals(id));
 
             return cartModel;
         }
@@ -168,41 +163,7 @@ namespace SessionTest.DataServices
 
             var cartModel = Mapper.Map<CartViewModel>(cart);
 
-            //SessionExtensions.Set(context.Session, id, cartModel);
-
             return cartModel;
-        }
-
-        
-        public async Task<string> FinishCart(HttpContext context, string id)
-        {
-            //    CartViewModel model;
-
-            //    if (SessionExtensions.Get<CartViewModel>(context.Session, id) == null)
-            //    {
-            //        model = new CartViewModel()
-            //        {
-            //            Id = Guid.NewGuid().ToString()
-            //        };
-
-            //        SessionExtensions.Set(context.Session, id, model);
-            //    }
-
-            //    model = SessionExtensions.Get<CartViewModel>(context.Session, id);
-
-            //    ICollection<ProductViewModel> products = model.Products;
-
-            //    var cart = new Cart
-            //    {
-            //        Id = id,
-            //        Products = products.Select(p => Mapper.Map<Product>(p)).ToList(),
-            //    };
-
-            //    await _cartRepository.AddAsync(cart);
-            //    await _cartRepository.SaveChangesAsync();
-
-            //    return cart.Id;
-            return "";
         }
 
         public async Task Delete(HttpContext context, string id)
@@ -253,6 +214,11 @@ namespace SessionTest.DataServices
 
         public async Task<bool> Create(HttpContext context, CodeViewModel codeModel)
         {
+            if (_cartRepository.All().Any(c => c.Id.Equals(codeModel.Id)))
+            {
+                return true;
+            }
+
             var cart = new Cart
             {
                 Id = codeModel.Id,
@@ -276,7 +242,5 @@ namespace SessionTest.DataServices
 
             return sessionModel != null;
         }
-
-        
     }
 }

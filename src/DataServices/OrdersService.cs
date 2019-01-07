@@ -4,14 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SessionTest.MappingServices;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SessionTest.Common;
-using SessionTest.InputModels;
 using SessionTest.Models;
 using SessionTest.ViewModels;
-using SessionExtensions = SessionTest.Common.SessionExtensions;
 
 namespace SessionTest.DataServices
 {
@@ -28,7 +24,6 @@ namespace SessionTest.DataServices
             _productsRepository = productsRepository;
             _cartsRepository = cartsRepository;
             _cartOrdersRepository = cartOrdersRepository;
-            //HttpContext context, ShippingDataInputModel model, string userId = null
         }
 
         public async Task<Order> CreateOrder(Cart cart, Product product, int quantity)

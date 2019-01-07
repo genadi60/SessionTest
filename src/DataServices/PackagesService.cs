@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +60,7 @@ namespace SessionTest.DataServices
         public async Task<string> ConfirmPackage(HttpContext context, PackageViewModel model)
         {
             var cartId = model.CartId;
-            //Cart cart = SessionExtensions.Get<Cart>(context.Session, cartId);
+            
             var cart = _cartRepository.All().Include(c => c.Orders).FirstOrDefault(c => c.Id.Equals(cartId));
             
             var paymentMethod =

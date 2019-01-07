@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Search Package";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+<div class="container w-50">
+    <hr />
+    <h3 class="text-center">Entered package code is invalid.</h3>
+    <hr />
+    <p class="text-center">If You have a valid Package code, please enter it.</p>
+    <form asp-action="PackageDetails" asp-controller="Package" method="post">
+        <div class="form-inline">
+            <label for="code" class="font-weight-bold col-sm-3">Package code</label>
+            <input id="code" type="text" name="search"class="form-control text-center col-sm-9"/>
+        </div>
+        <div class="d-flex justify-content-around">
+            <button type="submit" class="btn btn-dark mt-3">Continue</button>
+        </div>
+    </form>
+    <hr />
+    <div class="d-flex justify-content-around">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+    </div>
+</div>

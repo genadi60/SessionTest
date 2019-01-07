@@ -1,12 +1,8 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using SessionTest.DataServices.Contracts;
 using SessionTest.ViewModels;
-using SessionTest.ViewModels.Contracts;
 using Constants = SessionTest.Common.Constants;
 
 namespace SessionTest.Controllers
@@ -55,32 +51,29 @@ namespace SessionTest.Controllers
 
             if (TempData["Product"] != null)
             {
-                return RedirectToAction("Add", _code);
+                var id = TempData["Product"].ToString();
+                var quantity = int.Parse(TempData["Quantity"].ToString());
+
+                cartModel = _cartsService.AddToShoppingCart(HttpContext, id, quantity, cartModel.Id).Result;
             }
 
             return View(cartModel);
         }
         
-        public IActionResult Add(string productId, int quantity)
+        [HttpPost]
+        public IActionResult Add(string id, int quantity)
         {
-            string id = _code.Id;
-
-            if (id == null)
+            string cartid = _code.Id;
+            
+            if (cartid == null)
             {
-                TempData["Product"] = productId;
+                TempData["Product"] = id;
                 TempData["Quantity"] = quantity;
 
                 return RedirectToAction("Index");
             }
 
-            if (TempData["Product"] != null)
-            {
-                productId = TempData["Product"].ToString();
-                quantity = int.Parse(TempData["Quantity"].ToString());
-            }
-
-
-            var cartModel = _cartsService.AddToShoppingCart(HttpContext, productId, quantity, id).Result;
+            var cartModel = _cartsService.AddToShoppingCart(HttpContext, id, quantity, cartid).Result;
 
             return View("Index", cartModel);
         }

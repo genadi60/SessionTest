@@ -40,7 +40,8 @@
         </dl>
         <hr/>
         <div class="d-flex justify-content-around">
-            <form method="post" asp-action="Details" asp-controller="Product" asp-route-id="@Model.ProductId" >
+            <a class="btn btn-dark" href="javascript:history.back()" role="button">Back</a>
+            <form method="post" asp-action="Details" asp-controller="Product" asp-route-id="@Model.ProductId">
                 <button type="submit" class="btn btn-dark btn-sm mb-1">Details</button>
             </form>
         </div>

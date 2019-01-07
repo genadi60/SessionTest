@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SessionTest.Models;
 using SessionTest.ViewModels;
 using System.Threading.Tasks;
 
@@ -12,8 +11,6 @@ namespace SessionTest.DataServices.Contracts
         Task<CartViewModel> AddToShoppingCart(HttpContext context, string productId, int quantity, string id);
 
         Task<CartViewModel> RemoveFromShoppingCart(HttpContext context, string productId, int quantity, string id);
-
-        Task<string> FinishCart(HttpContext context, string id);
 
         Task Delete(HttpContext context, string id);
 
